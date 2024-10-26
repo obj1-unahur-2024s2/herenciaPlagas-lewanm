@@ -1,25 +1,45 @@
+import plagas.*
+
 class Elemento{
     method esBueno(){}
+    method afectar(plagaQueAfecta){}
 }
 
 class Hogar inherits Elemento{
-    const mugre
+    var mugre
     const confort
 
     override method esBueno() = mugre * 0.5 <= confort
+    override method afectar(plaga){
+        mugre += plaga.nivelDeDanio()
+    }
 }
 
 class Huerta inherits Elemento{
-    const capacidadDeProduccion
+    var capacidadDeProduccion
     const nivelProduccion
 
     override method esBueno() = capacidadDeProduccion > nivelProduccion
+    override method afectar(plaga){
+
+        const calculoDanio = if (plaga.transmiteEnfermedades()) {plaga.nivelDeDanio() * 0.1 + 10} else {plaga.nivelDeDanio() * 0.1}
+        capacidadDeProduccion = 0.max(capacidadDeProduccion - calculoDanio)
+    }
 }
 
 class Mascota inherits Elemento{
-    const salud
+    var salud
     
     override method esBueno() = salud > 250
+    override method afectar(plaga){
+        if(plaga.transmiteEnfermedades()){
+            self.disminuirVida(plaga.nivelDeDanio())
+        }
+    }
+
+    method disminuirVida(cantidad){
+        salud = 0.max(salud - cantidad)
+    }
 }
 
 class Barrio{
